@@ -1,0 +1,60 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Restaurants</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>User</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @restaurants.each do |restaurant| %>
+      <tr>
+        <td><%= restaurant.name %></td>
+        <td><%= restaurant.user.email %></td>
+        <!-- 21) Show for now isn't protected but visible to everyone -->
+        <td><%= link_to 'Show', restaurant %></td>
+        <td>
+          <!-- 20) Here I use the policy of Pundit to set the logic to display or not the edit and destroy links -->
+          <!-- Only if I own the restaurant I can edit/destroy it -->
+          <% if policy(restaurant).edit? %>
+            <%= link_to 'Edit', edit_restaurant_path(restaurant) %>
+          <% end %>
+        </td>
+        <td>
+          <!-- 22) Same applies for destroying a restaurant -->
+          <!-- Right now we still need to implement the destroy though -> Go to RestaurantPolicy -->
+          <% if policy(restaurant).destroy? %>
+            <%= link_to 'Destroy', restaurant, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<!-- 27) When we don't have a specific instance, we have to pass the policy to the class -->
+<!-- Which since I'm going to create a new instance of that class, makes totally sense -->
+<% if policy(Restaurant).new? %>
+  <%= link_to 'New Restaurant', new_restaurant_path %>
+<% end %>
+<!-- Now this link is protected by the policy of Pundit -->
+<!-- 28) The main benefit of Pundit regards users who are admins/owners -->
+<!-- If we haven't, we have to generate a migration to add admin as boolean to User -->
+<!-- rails g migration AddAdminToUsers admin:boolean && rails db:migrate-->
+<!-- In migration set default: false -->
+<!-- rails db:migrate -->
+<!-- rails c in terminal -->
+<!-- select one normal user and set the owner attribute to true like such: -->
+<!-- user.owner = true -->
+<!-- user.save! -->
+<!-- user.reload => Now the owner attribute is true -->
+
+<!-- 29) Let's say that now I want admins to be able to edit all the restaurants, no matter their owner -->
+<!-- 30) I go to RestaurantPolicy for that -->
